@@ -1,4 +1,5 @@
-import { Entity, Column, Index, DeleteDateColumn } from "typeorm";
+import { Section } from "../../section/entities/section.entities";
+import { Entity, Column, Index, DeleteDateColumn, OneToMany, JoinColumn } from "typeorm";
 import { Base } from "../../base/entities/base.entity";
 
 @Entity("projects")
@@ -9,4 +10,7 @@ export class Project extends Base {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @OneToMany((type) => Section, (section) => section.project)
+  sections: Section[]
 }
