@@ -1,9 +1,12 @@
-import { BadRequestException, Body, Controller, Post, UseGuards, ValidationPipe } from "@nestjs/common";
-import { Expose } from "class-transformer";
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post, UseGuards, ValidationPipe } from "@nestjs/common";
+import { Expose, Type } from "class-transformer";
 import { transformWithExclude } from "../../helpers/transform.helper";
+import { SuccessDto } from "../base/dtos/success.dto";
 import { AdminGuard } from "../base/guards/Admin.guard";
+import { ProjectOut } from "../project/project.controller";
 import { ProjectService } from "../project/project.service";
 import { CreateSectionDto } from "./dtos/createSection.dto";
+import { UpdateSectionDto } from "./dtos/updateSection.dto";
 import { SectionService } from "./section.service";
 
 export class SectionOut {
@@ -11,7 +14,9 @@ export class SectionOut {
   @Expose() name: string;
   @Expose() createdAt: Date;
   @Expose() updatedAt: Date;
-  @Expose() projectId: string;
+
+  @Type(() => ProjectOut)
+  @Expose() project: ProjectOut;
 }
 
 @Controller("section")
@@ -29,8 +34,36 @@ export class SectionController {
 
     const projectCheck = await this.projectService.getProjectById(createSectionDto.projectId);
     if (!projectCheck) throw new BadRequestException(`Project with "${createSectionDto.projectId}" not founded`);
-    
+
     const section = await this.sectionService.createNewSection(createSectionDto);
     return transformWithExclude(section, SectionOut);
+  }
+
+  @Get(":sectionId") 
+  async getSection(@Param("sectionId") sectionId: string) {
+    const section = await this.sectionService.getSectionById(sectionId, true);
+    if (!section) throw new NotFoundException();
+
+    console.log(section)
+    return transformWithExclude(section, SectionOut);
+  }
+
+  @Patch(":sectionId")
+  async updateSection(@Body(ValidationPipe) updateSectionDto: UpdateSectionDto, @Param("sectionId") sectionId: string) {
+    const section = await this.sectionService.getSectionById(sectionId, true);
+    if (!section) throw new NotFoundException(`Section with id ${sectionId} not found`);
+
+    if (updateSectionDto.projectId) {
+      const checkProject = await this.projectService.getProjectById(updateSectionDto.projectId);
+      if (!checkProject) throw new NotFoundException(`Project id "${updateSectionDto.projectId}" not found`);
+    }
+
+    if (updateSectionDto.name && updateSectionDto.name !== section.name) {
+      const checkSection = await this.sectionService.getSectionByName(updateSectionDto.name, section.project.id)
+      if (checkSection) throw new BadRequestException(`Section with "${updateSectionDto.name}" already exists in "${section.project.name}"`)
+    }
+
+    await this.sectionService.updateSectionById(updateSectionDto, sectionId);
+    return new SuccessDto();
   }
 }
