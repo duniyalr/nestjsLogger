@@ -49,7 +49,7 @@ export class ProjectService {
   async index(indexDto: IndexDto): Promise<IndexPageDto<Project>> {
     const queryBuilder = this.dataSource.getRepository(Project)
       .createQueryBuilder("project")
-      .where("project.name like :like", {like: `%${scapeSqlLikeOperator(indexDto.q)}%`})
+      .where("project.name like :like", {like: `%${indexDto.q ? scapeSqlLikeOperator(indexDto.q) : ""}%`})
       .orderBy("project.createdAt", indexDto.sortOrder)
       .skip(indexDto.skip)
       .take(indexDto.take)
@@ -70,6 +70,15 @@ export class ProjectService {
         name: projectData.name
       })
       .where("projects.id = :id", {id: projectData.id})
+      .execute();
+  }
+
+  async deleteProject(projectId: string) {
+    return this.dataSource.getRepository(Project)
+      .createQueryBuilder("projects")
+      .where("projects.id = :id", {id: projectId})
+      .andWhere("projects.deletedAt IS NULL")
+      .softDelete()
       .execute();
   }
 }

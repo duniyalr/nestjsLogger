@@ -5,7 +5,6 @@ import { Role } from "../entities/role.enum";
 @Injectable()
 export class AdminGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-      console.log("admin guard")
       const req = context.switchToHttp().getRequest();
 
       return Boolean(

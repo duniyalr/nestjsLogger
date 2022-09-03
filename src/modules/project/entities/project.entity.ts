@@ -1,4 +1,4 @@
-import { Entity, Column, Index } from "typeorm";
+import { Entity, Column, Index, DeleteDateColumn } from "typeorm";
 import { Base } from "../../base/entities/base.entity";
 
 @Entity("projects")
@@ -6,4 +6,7 @@ import { Base } from "../../base/entities/base.entity";
 export class Project extends Base {
   @Column()
   name: string;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   NotFoundException,
   Param,
@@ -87,4 +88,10 @@ export class ProjectController {
     return new SuccessDto();
   }
 
+  @Delete(":projectId")
+  async deleteProject(@Param("projectId") projectId: string) {
+    const deleteResult = await this.projectService.deleteProject(projectId);
+    if (deleteResult.affected) return new SuccessDto();
+    throw new BadRequestException(`Project with id "${projectId}" not founded`);
+  }
 }
