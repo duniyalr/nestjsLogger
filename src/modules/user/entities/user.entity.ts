@@ -28,4 +28,7 @@ export class User extends Base {
 
   @OneToMany((type) => Session, (session) => session.user)
   sessions: Session[]
+
+  @Column({type: "boolean", default: true}) 
+  active: boolean;
 }

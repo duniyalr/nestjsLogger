@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException, UseGuards } from "@nestjs/common";
 import { hashPassword, validatePassword } from "../../helpers/auth.helper";
 import { transformWithExclude } from "../../helpers/transform.helper";
 import { AuthService } from "./auth.service";
@@ -7,6 +7,7 @@ import { Expose } from "class-transformer";
 import { AuthLoginDto } from "./dtos/authLogin.dto";
 import { SessionService } from "../session/session.service";
 import { User } from "./entities/user.entity";
+import { RegisterAdminGuard } from "./guards/registerAdmin.guard";
 
 
 class UserOut {
@@ -27,6 +28,28 @@ export class AuthController {
     private authService: AuthService,
     private sessionService: SessionService
   ) {}
+
+  @Post("registerAdmin")
+  @UseGuards(RegisterAdminGuard)
+  async registerAdmin(@Body(ValidationPipe) authRegisterDto: AuthRegisterDto) {
+    const checkUser = await this.authService.findUserByUsernameOrEmail({
+      username: authRegisterDto.username,
+      email: authRegisterDto.email
+    });
+
+    if (checkUser) throw new BadRequestException();
+
+    const { salt, hash } = await hashPassword(authRegisterDto.password);
+    const user = await this.authService.createAdmin({
+      username: authRegisterDto.username,
+      email: authRegisterDto.email,
+      password: hash,
+      salt
+    });
+
+    const out = transformWithExclude(user, UserOut);
+    return out;
+  }
 
   @Post("register")
   async register(@Body(ValidationPipe) authRegisterDto: AuthRegisterDto) {

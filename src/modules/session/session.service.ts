@@ -1,8 +1,17 @@
 import { Injectable } from "@nestjs/common";
+import { Expose } from "class-transformer";
+import { transformWithExclude } from "../../helpers/transform.helper";
 import { DataSource } from "typeorm";
 import { ConfigService } from "../base/config.service";
 import { User } from "../user/entities/user.entity";
 import { Session } from "./entities/session.entity";
+import { Role } from "../base/entities/role.enum";
+
+export class RequestUser {
+  @Expose() id: string;
+  @Expose() username: string;
+  @Expose() role: Role;
+}
 
 @Injectable() 
 export class SessionService {
@@ -47,5 +56,13 @@ export class SessionService {
       .where("userId = :userId", {userId: user.id}) // delete not supporting join
       .andWhere("sessions.expiredAt < Now()")
       .execute();
+  }
+
+  async getSessionWithUserBySessionString(sessionString: string) {
+    return this.dataSource.getRepository("Session")
+      .createQueryBuilder("session")
+      .innerJoinAndSelect("session.user", "user")
+      .where("session.session = :session", {session: sessionString})
+      .getOne()
   }
 }
