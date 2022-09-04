@@ -65,4 +65,13 @@ export class SessionService {
       .where("session.session = :session", {session: sessionString})
       .getOne()
   }
+
+  deleteSessionById(sessionId: string) {
+    return this.dataSource.getRepository(Session)
+      .createQueryBuilder()
+      .delete()
+      .from("sessions")
+      .where("sessions.id = :id", {id: sessionId})
+      .execute();
+  }
 }

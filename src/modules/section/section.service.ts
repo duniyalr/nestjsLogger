@@ -73,4 +73,13 @@ export class SectionService {
       .where("id = :id", {id: sectionId})
       .execute();
   }
+
+  deleteSectionById(sectionId: string) {
+    return this.dataSource.getRepository(Section)
+      .createQueryBuilder("section")
+      .where("sections.id = :id",  {id: sectionId})
+      .andWhere("sections.deletedAt IS NULL")
+      .softDelete()
+      .execute();
+  }
 }

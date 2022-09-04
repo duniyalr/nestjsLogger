@@ -1,5 +1,5 @@
 import { Project } from "../../project/entities/project.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
 import { Base } from "../../base/entities/base.entity";
 
 @Entity("sections")
@@ -14,4 +14,7 @@ export class Section extends Base{
 
   @Column({type: "boolean", default: true})
   active: boolean;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 }

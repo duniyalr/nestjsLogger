@@ -21,7 +21,10 @@ export class GetUserMiddleware implements NestMiddleware {
     const session = await this.sessionService.getSessionWithUserBySessionString(sessionString);
     if (!session) return next();
 
-    if (session.expiredAt < new Date()) return next(new UnauthorizedException());
+    if (session.expiredAt < new Date()) {
+      await this.sessionService.deleteSessionById(session.id);
+      return next(new UnauthorizedException());
+    }
     if (!session.user.active) return next(new ForbiddenException());
 
     req.user = session.user;

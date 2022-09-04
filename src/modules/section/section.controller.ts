@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Patch, Post, UseGuards, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards, ValidationPipe } from "@nestjs/common";
 import { Expose, Type } from "class-transformer";
 import { transformWithExclude } from "../../helpers/transform.helper";
 import { SuccessDto } from "../base/dtos/success.dto";
@@ -64,6 +64,14 @@ export class SectionController {
     }
 
     await this.sectionService.updateSectionById(updateSectionDto, sectionId);
+    return new SuccessDto();
+  }
+
+  @Delete(":sectionId")
+  async deleteSection(@Param("sectionId") sectionId: string) {
+    const deleteResult = await this.sectionService.deleteSectionById(sectionId);
+    if (deleteResult.affected === 0) throw new NotFoundException(`Section with "${sectionId}" not found`);
+
     return new SuccessDto();
   }
 }
