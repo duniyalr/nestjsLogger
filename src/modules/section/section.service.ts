@@ -9,7 +9,7 @@ import { IndexSectionSortBy } from "../base/dtos/indexSection.dto";
 import { PageMetaDto } from "../base/dtos/pageMeta.dto";
 import { IndexDto } from "../base/dtos/index.dto";
 import { IndexPageDto } from "../base/dtos/indexPage.dto";
-import { Project } from "../project/entities/project.entity";
+
 @Injectable()
 export class SectionService {
   constructor(

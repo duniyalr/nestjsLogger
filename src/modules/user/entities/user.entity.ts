@@ -2,6 +2,7 @@ import { Base } from "../../base/entities/base.entity";
 import { Role } from "../../base/entities/role.enum";
 import { Entity, Column, Index, ManyToOne, OneToMany} from "typeorm";
 import { Session } from "../../session/entities/session.entity";
+import { Section } from "../../section/entities/section.entities";
 
 @Entity("users")
 @Index(["username"], {unique: true})
@@ -28,6 +29,9 @@ export class User extends Base {
 
   @OneToMany((type) => Session, (session) => session.user)
   sessions: Session[]
+
+  @ManyToOne((type) => Section, (section) => section.users)
+  section: Section;
 
   @Column({type: "boolean", default: true}) 
   active: boolean;

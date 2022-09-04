@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, RequestMethod,  } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Session } from './modules/session/entities/session.entity';
 import { AppController } from './app.controller';
@@ -13,7 +13,10 @@ import { ProjectModule } from './modules/project/project.module';
 import { Project } from './modules/project/entities/project.entity';
 import { SectionModule } from './modules/section/section.module';
 import { Section } from './modules/section/entities/section.entities';
-
+import { Log } from './modules/log/entities/log.entity';
+import { APP_FILTER } from "@nestjs/core";
+import { MiddlewareExceptionFilter } from './modules/base/filters/middleware.filter';
+import { LogModule } from './modules/log/log.module';
 @Module({
   imports: [
     SessionModule,
@@ -30,16 +33,24 @@ import { Section } from './modules/section/entities/section.entities';
         User,
         Session,
         Project,
-        Section
+        Section,
+        Log
       ],
       synchronize: true
     }),
     UserModule,
     ProjectModule,
-    SectionModule
+    SectionModule,
+    LogModule
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: MiddlewareExceptionFilter
+    }
+  ],
 })
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {

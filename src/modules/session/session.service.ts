@@ -6,11 +6,16 @@ import { ConfigService } from "../base/config.service";
 import { User } from "../user/entities/user.entity";
 import { Session } from "./entities/session.entity";
 import { Role } from "../base/entities/role.enum";
+import { IsOptional } from "class-validator";
+import { Section } from "../section/entities/section.entities";
 
 export class RequestUser {
   @Expose() id: string;
   @Expose() username: string;
   @Expose() role: Role;
+
+  @IsOptional()
+  @Expose() section?: Section
 }
 
 @Injectable() 
@@ -62,6 +67,7 @@ export class SessionService {
     return this.dataSource.getRepository("Session")
       .createQueryBuilder("session")
       .innerJoinAndSelect("session.user", "user")
+      .leftJoinAndSelect("user.section", "section")
       .where("session.session = :session", {session: sessionString})
       .getOne()
   }
