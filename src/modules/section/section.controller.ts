@@ -1,12 +1,14 @@
-import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, UseGuards, ValidationPipe } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { Expose, Type } from "class-transformer";
 import { transformWithExclude } from "../../helpers/transform.helper";
+import { IndexSectionDto } from "../base/dtos/indexSection.dto";
 import { SuccessDto } from "../base/dtos/success.dto";
 import { AdminGuard } from "../base/guards/Admin.guard";
 import { ProjectOut } from "../project/project.controller";
 import { ProjectService } from "../project/project.service";
 import { CreateSectionDto } from "./dtos/createSection.dto";
 import { UpdateSectionDto } from "./dtos/updateSection.dto";
+import { Section } from "./entities/section.entities";
 import { SectionService } from "./section.service";
 
 export class SectionOut {
@@ -39,12 +41,20 @@ export class SectionController {
     return transformWithExclude(section, SectionOut);
   }
 
+  @Get("index")
+  @UsePipes(new ValidationPipe({transform: true}))
+  async indexSection(@Query() indexSectionDto: IndexSectionDto) {
+    const indexPageDto = await this.sectionService.index(indexSectionDto);
+
+    indexPageDto.items = transformWithExclude(indexPageDto.items, SectionOut) as Section[];
+    return indexPageDto;
+  }
+
   @Get(":sectionId") 
   async getSection(@Param("sectionId") sectionId: string) {
     const section = await this.sectionService.getSectionById(sectionId, true);
     if (!section) throw new NotFoundException();
 
-    console.log(section)
     return transformWithExclude(section, SectionOut);
   }
 

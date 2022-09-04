@@ -1,9 +1,15 @@
 import { Injectable } from "@nestjs/common";
 import { DataSource } from "typeorm";
+import { IndexSectionDto } from "../base/dtos/indexSection.dto";
 import { CreateSectionDto } from "./dtos/createSection.dto";
 import { UpdateSectionDto } from "./dtos/updateSection.dto";
 import { Section } from "./entities/section.entities";
-
+import { scapeSqlLikeOperator } from "../../helpers/escape.helper";
+import { IndexSectionSortBy } from "../base/dtos/indexSection.dto";
+import { PageMetaDto } from "../base/dtos/pageMeta.dto";
+import { IndexDto } from "../base/dtos/index.dto";
+import { IndexPageDto } from "../base/dtos/indexPage.dto";
+import { Project } from "../project/entities/project.entity";
 @Injectable()
 export class SectionService {
   constructor(
@@ -52,6 +58,41 @@ export class SectionService {
     return queryBuilder
             .where("section.id = :id", {id: sectionId})
             .getOne();
+  }
+
+  async index(indexSectionDto: IndexSectionDto) {
+    const queryBuilder = this.dataSource.getRepository(Section)
+      .createQueryBuilder("section")
+      .innerJoinAndSelect("section.project", "project")
+      
+      
+      
+    if (indexSectionDto.sortBy === IndexSectionSortBy.PROJECT_ID) {
+      queryBuilder
+      .orderBy("project.id", indexSectionDto.sortOrder);
+    } else {
+      queryBuilder
+      .orderBy("section.createdAt", indexSectionDto.sortOrder);
+    }
+    
+    if (indexSectionDto.q) {
+      queryBuilder.where("section.name like :like", {like: `%${scapeSqlLikeOperator(indexSectionDto.q)}%`});
+    }
+
+    if(indexSectionDto.projectId) {
+      queryBuilder.andWhere("project.id = :projectId", {projectId: indexSectionDto.projectId});
+    }
+    
+    queryBuilder
+    .take(indexSectionDto.take)
+    .skip(indexSectionDto.skip)
+    
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({indexDto: indexSectionDto as IndexDto, itemCount});
+
+    return new IndexPageDto(entities, pageMetaDto);
   }
 
   async updateSectionById(updateData: UpdateSectionDto, sectionId: string) {

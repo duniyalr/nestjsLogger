@@ -6,7 +6,7 @@ export enum ORDER {
 }
 
 export class IndexDto {
-  readonly sortBy: string = "createdAt"
+  sortBy: string = "createdAt"
 
   @IsEnum(ORDER)
   @IsOptional()
