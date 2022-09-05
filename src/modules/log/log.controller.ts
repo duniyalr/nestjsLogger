@@ -15,7 +15,6 @@ export class LogController {
   @UseGuards(UserGuard)
   async createLog(@Body(ValidationPipe) createLogDto: CreateLogDto, @GetUser() user: User) {
     const log = await this.logService.createLog(createLogDto, user);
-    console.log(log);
     return new SuccessDto();
   }
 }
