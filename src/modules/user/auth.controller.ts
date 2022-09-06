@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException, UseGuards, Query, Get } from "@nestjs/common";
 import { hashPassword, validatePassword } from "../../helpers/auth.helper";
 import { transformWithExclude } from "../../helpers/transform.helper";
 import { AuthService } from "./auth.service";
@@ -8,6 +8,8 @@ import { AuthLoginDto } from "./dtos/authLogin.dto";
 import { SessionService } from "../session/session.service";
 import { User } from "./entities/user.entity";
 import { RegisterAdminGuard } from "./guards/registerAdmin.guard";
+import { GetUser } from "../base/decorators/getUser.decorator";
+import { Role } from "../base/entities/role.enum";
 
 
 class UserOut {
@@ -15,6 +17,7 @@ class UserOut {
   @Expose() username: string;
   @Expose() email: string;
   @Expose() createdAt: Date;
+  @Expose() role: Role;
 }
 
 class SessionOut {
@@ -28,6 +31,13 @@ export class AuthController {
     private authService: AuthService,
     private sessionService: SessionService
   ) {}
+
+  @Get("who")
+  async who(@GetUser() user: User) {
+    if(!user) return new UnauthorizedException("You are not logged in");
+
+    return transformWithExclude(user, UserOut);
+  }
 
   @Post("registerAdmin")
   @UseGuards(RegisterAdminGuard)
@@ -76,6 +86,7 @@ export class AuthController {
   async login(@Body(ValidationPipe) authLoginDto: AuthLoginDto) {
     // only one session per user at this point is allowed
     const user: User = await this.authService.findUserByUsernameOrEmail({username: authLoginDto.username});
+    if (!user) throw new BadRequestException("User not Founded");
     const passwordCheck = await validatePassword(authLoginDto.password, user.password, user.salt);
 
     if (!passwordCheck) throw new UnauthorizedException();

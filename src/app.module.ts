@@ -14,9 +14,11 @@ import { Project } from './modules/project/entities/project.entity';
 import { SectionModule } from './modules/section/section.module';
 import { Section } from './modules/section/entities/section.entities';
 import { Log } from './modules/log/entities/log.entity';
-import { APP_FILTER } from "@nestjs/core";
+import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { MiddlewareExceptionFilter } from './modules/base/filters/middleware.filter';
 import { LogModule } from './modules/log/log.module';
+import ResponseTransformInterceptor from './modules/base/interceptors/responseTransform.interceptor';
+
 @Module({
   imports: [
     SessionModule,
@@ -49,6 +51,10 @@ import { LogModule } from './modules/log/log.module';
     {
       provide: APP_FILTER,
       useClass: MiddlewareExceptionFilter
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: ResponseTransformInterceptor
     }
   ],
 })
@@ -57,7 +63,7 @@ export class AppModule implements NestModule{
       consumer
         .apply(GetUserMiddleware)
         .exclude(
-          { path: "/auth/login", method: RequestMethod.POST }
+          { path: "/api/auth/login", method: RequestMethod.POST }
         )
         .forRoutes("*")
   }
