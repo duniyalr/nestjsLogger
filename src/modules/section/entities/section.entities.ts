@@ -4,7 +4,7 @@ import { Base } from "../../base/entities/base.entity";
 import { Log } from "../../log/entities/log.entity";
 import { User } from "../../user/entities/user.entity";
 @Entity("sections")
-@Index(["name"], {unique: true})
+@Index(["name", "project"], {unique: true})
 export class Section extends Base{
   @Column()
   name: string;

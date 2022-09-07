@@ -42,7 +42,7 @@ export class SectionService {
       .createQueryBuilder("section")
       .leftJoinAndSelect("section.project", "project")
       .where("section.name = :name", {name: sectionName})
-      .andWhere("projectId = :id", {id: projectId})
+      .andWhere("project.id = :id", {id: projectId})
       .getOne();
   }
 

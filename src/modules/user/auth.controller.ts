@@ -1,4 +1,4 @@
-import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException, UseGuards, Query, Get } from "@nestjs/common";
+import { Body, Controller, Post, ValidationPipe, BadRequestException, UnauthorizedException, UseGuards, Query, Get, Res } from "@nestjs/common";
 import { hashPassword, validatePassword } from "../../helpers/auth.helper";
 import { transformWithExclude } from "../../helpers/transform.helper";
 import { AuthService } from "./auth.service";
@@ -10,7 +10,8 @@ import { User } from "./entities/user.entity";
 import { RegisterAdminGuard } from "./guards/registerAdmin.guard";
 import { GetUser } from "../base/decorators/getUser.decorator";
 import { Role } from "../base/entities/role.enum";
-
+import { Response } from "express";
+import { ConfigService } from "../base/config.service";
 
 class UserOut {
   @Expose() id: string;
@@ -29,7 +30,8 @@ class SessionOut {
 export class AuthController {
   constructor (
     private authService: AuthService,
-    private sessionService: SessionService
+    private sessionService: SessionService,
+    private configService: ConfigService
   ) {}
 
   @Get("who")
@@ -83,7 +85,7 @@ export class AuthController {
   }
 
   @Post("login")
-  async login(@Body(ValidationPipe) authLoginDto: AuthLoginDto) {
+  async login(@Body(ValidationPipe) authLoginDto: AuthLoginDto, @Res({passthrough: true}) response: Response) {
     // only one session per user at this point is allowed
     const user: User = await this.authService.findUserByUsernameOrEmail({username: authLoginDto.username});
     if (!user) throw new BadRequestException("User not Founded");
@@ -98,10 +100,12 @@ export class AuthController {
         // removing old sessions
         await this.sessionService.removeExpiredSessionsByUser(user);
       } else {
+          response.cookie(this.configService.sessionHeaderKey, prevSessions[0].session) ;
         return transformWithExclude(prevSessions[0], SessionOut);
       }
     }
     const session = await this.sessionService.createNewSession(user);
+    response.cookie(this.configService.sessionHeaderKey, session.sessoin);
 
     const out = transformWithExclude(session, SessionOut);
     return out;

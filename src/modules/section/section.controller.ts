@@ -32,6 +32,7 @@ export class SectionController {
   @Post()
   async createSection(@Body(ValidationPipe) createSectionDto: CreateSectionDto) {
     const checkSection = await this.sectionService.getSectionByName(createSectionDto.name, createSectionDto.projectId);
+    console.log("checkSection", checkSection)
     if (checkSection) throw new BadRequestException(`Section with "${createSectionDto.name}" exists in project`);
 
     const projectCheck = await this.projectService.getProjectById(createSectionDto.projectId);
