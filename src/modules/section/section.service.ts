@@ -11,6 +11,7 @@ import { IndexDto } from "../base/dtos/index.dto";
 import { IndexPageDto } from "../base/dtos/indexPage.dto";
 import { SectionSession } from "./entities/sectionSession.entity";
 import { generateSession } from "../../helpers/auth.helper";
+import { IndexSectionSessionDto } from "../base/dtos/indexSectionSession.dto";
 
 @Injectable()
 export class SectionService {
@@ -145,5 +146,55 @@ export class SectionService {
     .innerJoinAndSelect("sectionSession.section", "section")
     .where("sectionSession.session = :session", {session: sectionSessionString})
     .getOne();
+  }
+
+  async sessionIndex(indexSectionSessionDto: IndexSectionSessionDto) {
+    console.log(indexSectionSessionDto)
+    const queryBuilder = this.dataSource.getRepository(SectionSession)
+      .createQueryBuilder("sectionsession")
+      .innerJoinAndSelect("sectionsession.section", "s")
+      .innerJoinAndSelect("s.project", "project");
+
+      if (indexSectionSessionDto.projectId) {
+        queryBuilder.andWhere("project.id = :projectId", {projectId: indexSectionSessionDto.projectId});
+      }
+
+    if(indexSectionSessionDto.sectionId) {
+      queryBuilder.andWhere("s.id = :sectionId", {sectionId: indexSectionSessionDto.sectionId});
+    }
+
+    let sortBy;
+    switch(indexSectionSessionDto.sortBy) {
+      case "createdAt":
+        sortBy = "sectionsession.createdAt"
+        break;
+      case "projectId":
+        sortBy = "project.id";
+        break;
+      case "sectionId":
+        sortBy = "s.id";
+    }
+
+    queryBuilder.orderBy(sortBy, indexSectionSessionDto.sortOrder);
+
+    queryBuilder
+    .take(indexSectionSessionDto.take)
+    .skip(indexSectionSessionDto.skip)
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({indexDto: indexSectionSessionDto as IndexDto, itemCount});
+
+    return new IndexPageDto(entities, pageMetaDto);
+  }
+
+  async deleteSession(sectionSessionId: string) {
+    return this.dataSource.getRepository(SectionSession)
+      .createQueryBuilder()
+      .delete()
+      .from("sectionsessions")
+      .where("id = :sectionSessionId", {sectionSessionId: sectionSessionId})
+      .execute();
   }
 }

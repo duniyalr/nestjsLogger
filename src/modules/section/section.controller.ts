@@ -16,6 +16,7 @@ import {
 import { Expose, Type } from 'class-transformer';
 import { transformWithExclude } from '../../helpers/transform.helper';
 import { IndexSectionDto } from '../base/dtos/indexSection.dto';
+import { IndexSectionSessionDto } from '../base/dtos/indexSectionSession.dto';
 import { SuccessDto } from '../base/dtos/success.dto';
 import { AdminGuard } from '../base/guards/Admin.guard';
 import { ProjectOut } from '../project/project.controller';
@@ -24,6 +25,7 @@ import { CreateSectionDto } from './dtos/createSection.dto';
 import CreateSectionSessionDto from './dtos/createSectionSession.dto';
 import { UpdateSectionDto } from './dtos/updateSection.dto';
 import { Section } from './entities/section.entity';
+import { SectionSession } from './entities/sectionSession.entity';
 import { SectionService } from './section.service';
 
 export class SectionOut {
@@ -154,5 +156,23 @@ export class SectionController {
     const sectionSession = await this.sectionService.createSectionSession(section);
 
     return transformWithExclude(sectionSession, SectionSessionOut);
+  }
+
+  @Get("session/index")
+  @UsePipes(new ValidationPipe({transform: true}))
+  @UseGuards(AdminGuard)
+  async sessionIndex(@Query() indexSectionSessionDto: IndexSectionSessionDto) {
+    const indexPageDto = await this.sectionService.sessionIndex(indexSectionSessionDto);
+
+    indexPageDto.items = transformWithExclude(indexPageDto.items, SectionSessionOut) as SectionSession[];
+    return indexPageDto;
+  }
+
+  @Delete("session/:sectionSessionId")
+  @UseGuards(AdminGuard)
+  async deleteSession(@Param("sectionSessionId") sectionSessionId: string) {
+    const result = await this.sectionService.deleteSession(sectionSessionId);
+    if (result.affected === 0) throw new BadRequestException(`Section session with id "${sectionSessionId}" not found`);
+    return new SuccessDto();
   }
 }
