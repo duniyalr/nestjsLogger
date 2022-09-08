@@ -2,7 +2,7 @@ import { Base } from "../../base/entities/base.entity";
 import { Role } from "../../base/entities/role.enum";
 import { Entity, Column, Index, ManyToOne, OneToMany} from "typeorm";
 import { Session } from "../../session/entities/session.entity";
-import { Section } from "../../section/entities/section.entities";
+import { Section } from "../../section/entities/section.entity";
 import { Log } from "../../log/entities/log.entity";
 
 @Entity("users")

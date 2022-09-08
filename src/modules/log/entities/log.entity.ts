@@ -1,6 +1,6 @@
 import { Base } from "../../base/entities/base.entity";
 import { Column, Entity, ManyToOne } from "typeorm";
-import { Section } from "../../section/entities/section.entities";
+import { Section } from "../../section/entities/section.entity";
 import { User } from "../../user/entities/user.entity";
 import { ContentType } from "../dtos/createLog.dto";
 

@@ -7,7 +7,7 @@ import { User } from "../user/entities/user.entity";
 import { Session } from "./entities/session.entity";
 import { Role } from "../base/entities/role.enum";
 import { IsOptional } from "class-validator";
-import { Section } from "../section/entities/section.entities";
+import { Section } from "../section/entities/section.entity";
 
 export class RequestUser {
   @Expose() id: string;

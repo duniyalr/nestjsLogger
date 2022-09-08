@@ -1,4 +1,4 @@
-import { Section } from "../../section/entities/section.entities";
+import { Section } from "../../section/entities/section.entity";
 import { Entity, Column, Index, DeleteDateColumn, OneToMany, JoinColumn } from "typeorm";
 import { Base } from "../../base/entities/base.entity";
 

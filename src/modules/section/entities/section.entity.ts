@@ -3,6 +3,8 @@ import { Column, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, OneToMa
 import { Base } from "../../base/entities/base.entity";
 import { Log } from "../../log/entities/log.entity";
 import { User } from "../../user/entities/user.entity";
+import { SectionSession } from "./sectionSession.entity";
+
 @Entity("sections")
 @Index(["name", "project"], {unique: true})
 export class Section extends Base{
@@ -12,6 +14,9 @@ export class Section extends Base{
   @ManyToOne((type) => Project, (project) => project.sections)
   @JoinColumn()
   project: Project;
+
+  @ManyToOne((type) => SectionSession, (sectionSession) => sectionSession.section)
+  sessions: SectionSession[];
 
   @OneToMany((type) => Log, (log) => log.section)
   logs: Log[];

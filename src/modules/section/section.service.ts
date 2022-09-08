@@ -3,7 +3,7 @@ import { DataSource } from "typeorm";
 import { IndexSectionDto } from "../base/dtos/indexSection.dto";
 import { CreateSectionDto } from "./dtos/createSection.dto";
 import { UpdateSectionDto } from "./dtos/updateSection.dto";
-import { Section } from "./entities/section.entities";
+import { Section } from "./entities/section.entity";
 import { scapeSqlLikeOperator } from "../../helpers/escape.helper";
 import { IndexSectionSortBy } from "../base/dtos/indexSection.dto";
 import { PageMetaDto } from "../base/dtos/pageMeta.dto";

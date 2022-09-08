@@ -12,12 +12,13 @@ import { SessionModule } from './modules/session/session.module';
 import { ProjectModule } from './modules/project/project.module';
 import { Project } from './modules/project/entities/project.entity';
 import { SectionModule } from './modules/section/section.module';
-import { Section } from './modules/section/entities/section.entities';
+import { Section } from './modules/section/entities/section.entity';
 import { Log } from './modules/log/entities/log.entity';
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { MiddlewareExceptionFilter } from './modules/base/filters/middleware.filter';
 import { LogModule } from './modules/log/log.module';
 import ResponseTransformInterceptor from './modules/base/interceptors/responseTransform.interceptor';
+import { SectionSession } from './modules/section/entities/sectionSession.entity';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import ResponseTransformInterceptor from './modules/base/interceptors/responseTr
         Session,
         Project,
         Section,
+        SectionSession,
         Log
       ],
       synchronize: true
