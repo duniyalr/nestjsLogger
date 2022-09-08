@@ -2,7 +2,7 @@ import { Base } from "../../base/entities/base.entity";
 import { Column, Entity, Index, ManyToOne } from "typeorm";
 import { Section } from "./section.entity";
 
-@Entity("sectionSessions")
+@Entity("sectionsessions")
 @Index(["session"])
 export class SectionSession extends Base {
   @Column()

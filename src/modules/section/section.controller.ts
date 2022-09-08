@@ -21,6 +21,7 @@ import { AdminGuard } from '../base/guards/Admin.guard';
 import { ProjectOut } from '../project/project.controller';
 import { ProjectService } from '../project/project.service';
 import { CreateSectionDto } from './dtos/createSection.dto';
+import CreateSectionSessionDto from './dtos/createSectionSession.dto';
 import { UpdateSectionDto } from './dtos/updateSection.dto';
 import { Section } from './entities/section.entity';
 import { SectionService } from './section.service';
@@ -34,6 +35,17 @@ export class SectionOut {
   @Type(() => ProjectOut)
   @Expose()
   project: ProjectOut;
+}
+
+export class SectionSessionOut {
+  @Expose() id: string;
+  @Expose() session: string;
+  @Expose() createdAt: Date;
+  @Expose() updatedAt: Date;
+
+  @Type(() => SectionOut)
+  @Expose()
+  section: SectionOut;
 }
 
 @Controller('section')
@@ -132,5 +144,15 @@ export class SectionController {
       throw new NotFoundException(`Section with "${sectionId}" not found`);
 
     return new SuccessDto();
+  }
+
+  @Post("session")
+  async createSectionSession(@Body(ValidationPipe) createSectionSessionDto: CreateSectionSessionDto) {
+    const section = await this.sectionService.getSectionById(createSectionSessionDto.sectionId);
+    if (!section) throw new BadRequestException(`Section with id "${createSectionSessionDto.sectionId}" not found`);
+
+    const sectionSession = await this.sectionService.createSectionSession(section);
+
+    return transformWithExclude(sectionSession, SectionSessionOut);
   }
 }

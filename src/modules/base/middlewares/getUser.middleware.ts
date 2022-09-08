@@ -18,6 +18,7 @@ export class GetUserMiddleware implements NestMiddleware {
     private sessionService: SessionService
   ) {}
   async use(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    if (req.headers[this.configService.sessionTypeHeaderKey]) return next();
     let sessionString = req.headers[this.configService.sessionHeaderKey];  
     if (Array.isArray(sessionString)) sessionString = sessionString[0];
     if (!sessionString) return next();

@@ -21,6 +21,4 @@ export class Log extends Base {
   @ManyToOne((type) => Section, (section) => section.logs)
   section: Section;
 
-  @ManyToOne((type) => User, (user) => user.logs)
-  user: User;
 }

@@ -33,9 +33,6 @@ export class User extends Base {
 
   @ManyToOne((type) => Section, (section) => section.users)
   section: Section;
-
-  @OneToMany((type) => Log, (log) => log.user)
-  logs: Log[]
   
   @Column({type: "boolean", default: true}) 
   active: boolean;

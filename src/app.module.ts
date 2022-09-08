@@ -19,6 +19,7 @@ import { MiddlewareExceptionFilter } from './modules/base/filters/middleware.fil
 import { LogModule } from './modules/log/log.module';
 import ResponseTransformInterceptor from './modules/base/interceptors/responseTransform.interceptor';
 import { SectionSession } from './modules/section/entities/sectionSession.entity';
+import { GetSectionMiddleware } from './modules/base/middlewares/getSection.middleware';
 
 @Module({
   imports: [
@@ -63,10 +64,16 @@ import { SectionSession } from './modules/section/entities/sectionSession.entity
 export class AppModule implements NestModule{
   configure(consumer: MiddlewareConsumer) {
       consumer
+        .apply(GetSectionMiddleware)
+        .forRoutes(
+          {path: "log", method: RequestMethod.POST}
+        );
+
+      consumer
         .apply(GetUserMiddleware)
         .exclude(
           { path: "/api/auth/login", method: RequestMethod.POST }
         )
-        .forRoutes("*")
+        .forRoutes("*");
   }
 }

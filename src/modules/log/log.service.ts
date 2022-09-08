@@ -8,18 +8,18 @@ import { PageMetaDto } from "../base/dtos/pageMeta.dto";
 import { IndexPageDto } from "../base/dtos/indexPage.dto";
 import { IndexDto } from "../base/dtos/index.dto";
 import { scapeSqlLikeOperator } from "../../helpers/escape.helper";
+import { Section } from "../section/entities/section.entity";
 @Injectable()
 export class LogService {
   constructor(
     private dataSource: DataSource
   ) {}
 
-  async createLog(createLogDto: CreateLogDto, user: User) {
+  async createLog(createLogDto: CreateLogDto, section: Section) {
     const logRepo = this.dataSource.getRepository(Log);
     const log = logRepo.create({
       ...createLogDto,
-      section: user.section,
-      user: user
+      section: section
     });
 
     await logRepo.save(log);
@@ -39,7 +39,6 @@ export class LogService {
       }
 
     if(indexLogDto.sectionId) {
-      console.log("yes sectionId", indexLogDto.sectionId)
       queryBuilder.andWhere("s.id = :sectionId", {sectionId: indexLogDto.sectionId});
     }
 

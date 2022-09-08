@@ -5,10 +5,12 @@ export class ConfigService {
   readonly registerAdminSecret: string;
   readonly userSessionExpireTime: number;
   readonly sessionHeaderKey: string;
+  readonly sessionTypeHeaderKey: string;
   constructor(
   ) {
     this.registerAdminSecret = "registerAdminSecret";
     this.userSessionExpireTime  = 24 * 60 * 60 * 1000; // one day
     this.sessionHeaderKey = "x-access-token";
+    this.sessionTypeHeaderKey = "x-session-type";
   }
 }

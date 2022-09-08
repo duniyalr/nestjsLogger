@@ -9,6 +9,8 @@ import { IndexSectionSortBy } from "../base/dtos/indexSection.dto";
 import { PageMetaDto } from "../base/dtos/pageMeta.dto";
 import { IndexDto } from "../base/dtos/index.dto";
 import { IndexPageDto } from "../base/dtos/indexPage.dto";
+import { SectionSession } from "./entities/sectionSession.entity";
+import { generateSession } from "../../helpers/auth.helper";
 
 @Injectable()
 export class SectionService {
@@ -122,5 +124,26 @@ export class SectionService {
       .andWhere("sections.deletedAt IS NULL")
       .softDelete()
       .execute();
+  }
+
+  async createSectionSession(section: Section) {
+    const sectionSessionRepo = this.dataSource.getRepository(SectionSession);
+    const sectionSessionString = generateSession();
+    const sectionSession = sectionSessionRepo.create({
+      session: sectionSessionString,
+      section
+    });
+    await sectionSessionRepo.save(sectionSession);
+
+    return sectionSession;
+  }
+
+  getSectionSession(sectionSessionString: string) {
+    console.log(sectionSessionString)
+    return this.dataSource.getRepository(SectionSession)
+    .createQueryBuilder("sectionSession")
+    .innerJoinAndSelect("sectionSession.section", "section")
+    .where("sectionSession.session = :session", {session: sectionSessionString})
+    .getOne();
   }
 }

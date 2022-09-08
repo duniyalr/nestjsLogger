@@ -10,9 +10,7 @@ export class UserGuard implements CanActivate {
 
       return Boolean(
         user &&
-        user.role === Role.USER &&
-        // section existence checked in middleware
-        user.section
+        user.role === Role.USER
       )
   }
 }
