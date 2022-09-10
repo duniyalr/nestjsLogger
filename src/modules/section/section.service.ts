@@ -140,7 +140,6 @@ export class SectionService {
   }
 
   getSectionSession(sectionSessionString: string) {
-    console.log(sectionSessionString)
     return this.dataSource.getRepository(SectionSession)
     .createQueryBuilder("sectionSession")
     .innerJoinAndSelect("sectionSession.section", "section")
@@ -149,7 +148,6 @@ export class SectionService {
   }
 
   async sessionIndex(indexSectionSessionDto: IndexSectionSessionDto) {
-    console.log(indexSectionSessionDto)
     const queryBuilder = this.dataSource.getRepository(SectionSession)
       .createQueryBuilder("sectionsession")
       .innerJoinAndSelect("sectionsession.section", "s")

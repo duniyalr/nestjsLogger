@@ -1,7 +1,6 @@
-import { Controller, Post, UseGuards, Body, ValidationPipe, Get, UsePipes, Query, Param } from "@nestjs/common";
+import { Controller, Post, UseGuards, Body, ValidationPipe, Get, UsePipes, Query, Param, NotFoundException } from "@nestjs/common";
 import { Expose, Type } from "class-transformer";
 import { IsOptional } from "class-validator";
-import { NotFoundError } from "rxjs";
 import { transformWithExclude } from"../../helpers/transform.helper";
 import { GetSection } from "../base/decorators/getSection.decorator";
 import { GetUser } from "../base/decorators/getUser.decorator";
@@ -54,7 +53,7 @@ export class LogController {
   @UseGuards(AdminGuard)
   async getLog(@Param("logId") logId: string) {
     const log = await this.logService.getLog(logId);
-    if (!log) throw new NotFoundError(`Log with "${logId}" id not found`)
+    if (!log) throw new NotFoundException(`Log with "${logId}" id not found`)
 
     return transformWithExclude(log, LogOut);
   }

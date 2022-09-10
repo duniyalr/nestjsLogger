@@ -29,27 +29,13 @@ export class GetSectionMiddleware implements NestMiddleware {
     if (!sessionString || !sessionTypeString || sessionTypeString !== "section") return next();
 
     const session = await this.sectionService.getSectionSession(sessionString) as SectionSession;
-    console.log(session)
     if (!session) {
       const exceptionPayload = new ExceptionPayload("Session not found")
       return next(new GetUserMiddlewareException(exceptionPayload));
     }
 
-    // if (session.expiredAt < new Date()) {      
-    //   const exceptionPayload = new ExceptionPayload("Session expired", session)
-    //   return next(new GetUserMiddlewareException(exceptionPayload));
-    // }
-
     const section = session.section;
-    // if (!session) return next(new ForbiddenException("Your user is deactive"));
-    // if (session.role === Role.USER) {
-    //   const section = session.section;
-    //   if (!section) {
-    //     return next(new ForbiddenException("Your user is deactive"))
-    //   }
 
-      // TODO for deactive sections
-    // } 
     req.section = section;
     return next();
   }
