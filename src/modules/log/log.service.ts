@@ -72,4 +72,16 @@ export class LogService {
     return new IndexPageDto(entities, pageMetaDto);
     
   }
+
+  async getLog(logId: string) {
+    const queryBuilder = this.dataSource.getRepository(Log)
+      .createQueryBuilder("log");
+    
+    queryBuilder
+      .innerJoinAndSelect("log.section", "section")
+      .innerJoinAndSelect("section.project", "project")
+      .where("log.id = :logId", {logId})
+
+    return queryBuilder.getOne();
+  }
 }

@@ -1,4 +1,4 @@
-import { NestMiddleware, Injectable, UnauthorizedException, ForbiddenException } from "@nestjs/common";
+import { NestMiddleware, Injectable, UnauthorizedException, ForbiddenException, ConsoleLogger } from "@nestjs/common";
 import { Request, Response, NextFunction } from "express";
 import { User } from "src/modules/user/entities/user.entity";
 import { Session } from "../../session/entities/session.entity";
