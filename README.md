@@ -1,8 +1,8 @@
 # Nest Js Logger
 
-A simple logger written in typescript with (Nest.js)[https://nestjs.com/] framework.
+A simple logger written in typescript with [Nest.js](https://nestjs.com/) framework.
 
-I used (typeorm)[https://typeorm.io/] and mysql. changing to other relational database possibly doesn't hurt! but there is no support for mongodb.
+I used [typeorm](https://typeorm.io/) and mysql. changing to other relational database possibly doesn't hurt! but there is no support for mongodb.
 
 ## TODO
 
